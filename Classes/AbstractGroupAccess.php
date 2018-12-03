@@ -24,6 +24,8 @@ namespace B13\DenyFeGroup;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -56,24 +58,27 @@ abstract class AbstractGroupAccess
      */
     protected function getMultipleGroupsWhereClause($field, $table)
     {
-        $orChecks = array(
-            $field . '=\'\'',    // If the field is empty, then OK
-            $field . ' IS NULL',    // If the field is NULL, then OK
-            $field . '=\'0\'',    // If the field contsains zero, then OK
-        );
+        $expressionBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable($table)
+            ->expr();
+        $orChecks = [];
+        // If the field is empty, then OK
+        $orChecks[] = $expressionBuilder->eq($field, $expressionBuilder->literal(''));
+        // If the field is NULL, then OK
+        $orChecks[] = $expressionBuilder->isNull($field);
+        // If the field contains zero, then OK
+        $orChecks[] = $expressionBuilder->eq($field, $expressionBuilder->literal('0'));
 
-        $andChecks = array();
+        $andChecks = [];
         foreach ($this->usergroups as $value) {
-            $check = $GLOBALS['TYPO3_DB']->listQuery($field, $value, $table);
+            $check = $expressionBuilder->inSet($field, $expressionBuilder->literal($value));
             $andChecks[] = '(NOT ' . $check . ')';
         }
-
-        return ' AND ((' . implode(' OR ', $orChecks) . ') OR (' . implode(' AND ', $andChecks) . '))';
+        return ' AND ((' . $expressionBuilder->orX(...$orChecks) . ') OR (' . $expressionBuilder->andX(...$andChecks) . '))';
     }
 
-
     /**
-     * Get all usergruops without the pseudo usergroups 0,-1,-2
+     * Get all user groups without the pseudo user groups 0,-1,-2
      * Do some basic caching for this session
      *
      * @return array
@@ -81,7 +86,7 @@ abstract class AbstractGroupAccess
     protected function getUsergroups()
     {
         if (!is_array($this->usergroups)) {
-            $this->usergroups = array();
+            $this->usergroups = [];
             $allgroups = GeneralUtility::intExplode(',', $GLOBALS['TSFE']->gr_list);
             foreach ($allgroups as $groupId) {
                 if ($groupId <= 0) {
@@ -92,8 +97,4 @@ abstract class AbstractGroupAccess
         }
         return $this->usergroups;
     }
-
 }
-
-
-?>

@@ -67,6 +67,3 @@ class GroupAccess extends AbstractGroupAccess
         return $sql;
     }
 }
-
-
-?>
