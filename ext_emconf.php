@@ -8,22 +8,19 @@ $EM_CONF[$_EXTKEY] = array (
 	'title' => 'Deny Usergroup Access',
 	'description' => 'Explicitly denies a page or content to a certain usergroup.',
 	'category' => 'fe',
-	'version' => '2.0.0',
+	'version' => '3.0.0',
     'state' => 'stable',
-    'modify_tables' => 'pages,tt_content',
-	'clearcacheonload' => 0,
+	'clearCacheOnLoad' => false,
     'author' => 'Benjamin Mack',
     'author_email' => 'typo3@b13.de',
     'author_company' => 'b:dreizehn GmbH',
 	'constraints' => array(
 		'depends' => array(
-			'typo3' => '6.2.0-7.9.99',
+			'typo3' => '8.7.0-9.9.99',
 		),
 		'conflicts' => array(
 		),
 		'suggests' => array(
-		),
-	),
+		)
+	)
 );
-
-?>
