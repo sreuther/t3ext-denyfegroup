@@ -25,6 +25,7 @@ namespace B13\DenyFeGroup;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -87,7 +88,14 @@ abstract class AbstractGroupAccess
     {
         if (!is_array($this->usergroups)) {
             $this->usergroups = [];
-            $allgroups = GeneralUtility::intExplode(',', $GLOBALS['TSFE']->gr_list);
+            $allgroups = GeneralUtility::intExplode(
+                ',',
+                implode(
+                    ',',
+                    GeneralUtility::makeInstance(Context::class)
+                        ->getPropertyFromAspect('frontend.user', 'groupIds', [0, -1])
+                )
+            );
             foreach ($allgroups as $groupId) {
                 if ($groupId <= 0) {
                     continue;

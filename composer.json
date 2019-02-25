@@ -1,7 +1,7 @@
 {
   "name": "b13/denyfegroup",
   "type": "typo3-cms-extension",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Explicitly denies a page or content to a certain usergroup.",
   "homepage": "https://github.com/b13/t3ext-denyfegroup",
   "license": ["GPL"],
