@@ -20,5 +20,10 @@
   "autoload-dev": {
     "psr-4": {
     }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "denyfegroup"
+    }
   }
 }
